@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN"
+	"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+
+<svg preserveAspectRatio="xMidYMid meet"
+	viewBox="0 0 1920 1080"
+	onload="init(evt)"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<title>SVG Clock</title>
+
+<script type="text/ecmascript">
+<![CDATA[
+
+var w = 1920;
+var w2 = w/2;
+var cw = 0;
+var h = 1080;
+var h2 = h/2;
+var ch = 0;
+var period = 100;
+var smooth = false;
+var SVGObj = false;
+var DigiDate = false;
+var DigiTime = false;
+var LineS = false;
+var LineM = false;
+var LineH = false;
+var Middle = false;
+var tblweek = new Array ('Sun', 'Mon', 'Tue', 'Wed' ,'Thu', 'Fri', 'Sat');
+var drgObj = false;
+
+function init(evt){
+    try {
+		SVGObj = evt.target.ownerDocument;
+		DigiDate = SVGObj.getElementById('ddate').firstChild;
+		DigiTime = SVGObj.getElementById('dtime').firstChild;
+		cw = (window.innerWidth  || document.documentElement.clientWidth  || 0);
+		ch = (window.innerHeight || document.documentElement.clientHeight || 0);
+		LineS  = SVGObj.getElementById('second');
+		LineM  = SVGObj.getElementById('minute');
+		LineH  = SVGObj.getElementById('hour');
+		Middle = SVGObj.getElementById('middle');
+		showDate();
+		showTime();
+		setInterval("showTime()", period);
+		setInterval("showDate()", 30000);
+		SVGObj.getElementById('id_digitime').addEventListener("mousedown", mousedown_listener, false);
+		SVGObj.getElementById('id_digidate').addEventListener("mousedown", mousedown_listener, false);
+		SVGObj.getElementById('middle').addEventListener("mousedown", mousedown_listener, false);
+    } catch(e) { return; }
+}
+
+function showTime(){
+	var noreen = new Date();
+	var d = 0;
+	if (smooth) {d=noreen.getMilliseconds() * 0.001;}
+	var s = noreen.getSeconds() + d;
+	var m = noreen.getMinutes();
+	var h = noreen.getHours();
+	LineS.setAttribute('transform', 'rotate(' + (s * 6) + ', ' + w2 + ', ' + h2 + ')');
+	LineM.setAttribute('transform', 'rotate(' + ((m + s/60) * 6) + ', ' + w2 + ', ' + h2 + ')');
+	LineH.setAttribute('transform', 'rotate(' + ((h + m/60) * 30) + ', ' + w2 + ', ' + h2 + ')');
+	try {
+		DigiTime.nodeValue = (h + 9000).toString().substr(2,2) + ':'
+			     + (m + 9000).toString().substr(2,2) + ':'
+			     + ((Math.floor(s) + 9000).toString()).substr(2,2);
+	} catch(e) { return; }
+}
+
+function showDate(){
+	var noreen = new Date();
+	try {
+		DigiDate.nodeValue = ((noreen.getMonth()+ 9001).toString()).substr(2,2) + '/'
+			     + ((noreen.getDate() + 9000).toString()).substr(2,2) + '('
+			     + tblweek[noreen.getDay()] + ')';
+	} catch(e) { return; }
+}
+
+function mousedown_listener(evt)	{
+	if (this!=Middle){
+		drgObj = this;
+		SVGObj.addEventListener("mousemove", mousemove_listener, true);
+		SVGObj.addEventListener("mouseup", mouseup_listener, true);
+	}else{
+		smooth = !smooth;
+	}
+}
+
+function mouseup_listener(evt){
+	SVGObj.removeEventListener("mousemove", mousemove_listener, true);
+	SVGObj.removeEventListener("mouseup", mouseup_listener, true);
+}
+
+function mousemove_listener(evt)	{
+	var x = w*evt.clientX/cw;
+	var y = h*evt.clientY/ch;
+	drgObj.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+    console.log(x+":"+y);
+    //console.log(evt.clientX+":"+evt.clientY);
+}
+
+]]>
+</script>
+
+<style type="text/css">
+<![CDATA[
+
+.back   {
+	fill: white;
+		stroke: gray;
+	}
+
+.fore   {
+	fill: black;
+	stroke: gray;
+	}
+
+]]>
+</style>
+<rect x='0' y='0' width='1920' height='1080' class='fore' />
+<circle cx='960' cy='540' r='460' class='back' />
+<circle cx='960' cy='540' r='450' class='back' />
+
+<g id='markers' class='fore'>
+<rect id="big"   x='955' y='100' width='10' height='85' />
+<use xlink:href='#big' transform='rotate( 90, 960, 540)' />
+<use xlink:href='#big' transform='rotate(180, 960, 540)' />
+<use xlink:href='#big' transform='rotate(270, 960, 540)' />
+<g id="small">
+<g id="mini">
+<rect x='957' y='100' width='3' height='15' transform='rotate( 6, 960, 540)' />
+<rect x='957' y='100' width='3' height='15' transform='rotate(12, 960, 540)' />
+<rect x='957' y='100' width='3' height='15' transform='rotate(18, 960, 540)' />
+<rect x='957' y='100' width='3' height='15' transform='rotate(24, 960, 540)' />
+</g><!--end_id:mini-->
+<rect x='957' y='100' width='6' height='15' transform='rotate(30, 960, 540)' />
+<rect x='957' y='120' width='6' height='65' transform='rotate(30, 960, 540)' />
+<use xlink:href='#mini' transform='rotate( 30, 960, 540)' />
+<rect x='957' y='100' width='6' height='15' transform='rotate(60, 960, 540)' />
+<rect x='957' y='120' width='6' height='65' transform='rotate(60, 960, 540)' />
+<use xlink:href='#mini' transform='rotate( 60, 960, 540)' />
+</g><!--end_id:small-->
+<use xlink:href='#small' transform='rotate( 90, 960, 540)' />
+<use xlink:href='#small' transform='rotate(180, 960, 540)' />
+<use xlink:href='#small' transform='rotate(270, 960, 540)' />
+</g><!--end_id:marker-->
+
+<g style='display:none;'>
+<text id='text_0h'  x= '905' y='220' style='font-size:90pt;stroke:black;fill:black'>12</text>
+<text id='text_3h'  x='1295' y='580' style='font-size:90pt;stroke:black;fill:black'>3</text>
+<text id='text_6h'  x= '930' y='940' style='font-size:90pt;stroke:black;fill:black'>6</text>
+<text id='text_9h'  x= '565' y='580' style='font-size:90pt;stroke:black;fill:black'>9</text>
+</g><!--end-->
+
+<rect id='hour'   x= '950' y='230' width='20' height='310' class='fore' />
+<rect id='minute' x= '954' y='160' width='12' height='380' class='fore' />
+<rect id='second' x= '957' y='120' width= '6' height='420' class='fore' />
+
+<circle id='middle' cx='960' cy='540' r='10' style='fill:red' />
+
+<g id='id_digidate' transform="translate(840, 450)">
+<rect x='0' y='0' width='250' height='50' class='fore'/>
+<text id='ddate'  x='10' y='40' style='font-size:35pt;' class='back'>mm/dd(day)</text>
+</g><!--end_id:id_digidate-->
+
+<g id='id_digitime' transform="translate(720, 600)">
+<rect x='0' y='0' width='480' height='130' class='fore'/>
+<text id='dtime'  x=' 10' y='110' style='font-size:80pt;' class='back'>hh:mm:ss</text>
+</g><!--end_id:id_digitime-->
+
+<g id='TVmarker' style='display:;' class='back'>
+<rect id='HDrect'   x=  '0' y=  '0' width='1920' height='1080' style='fill:none;'/>
+<rect id='SDrect'   x='240' y=  '0' width='1440' height='1080' style='fill:none;'/>
+<rect id='SD80safe' x='384' y='108' width='1152' height= '864' style='fill:none;'/>
+</g><!--end_id:TVmaker-->
+
+</svg>
